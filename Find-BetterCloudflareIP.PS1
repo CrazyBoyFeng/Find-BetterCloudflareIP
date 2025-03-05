@@ -93,9 +93,9 @@ If ($CurrentIP.Contains('.')) {
             if ($test_time -eq 0 -or $test_loss -gt $loss_rate_limit) {
                 continue
             }
-            elseif ($current_time -eq 0 -or $current_loss -gt $loss_rate_limit -or $test_time -lt $current_time) {
-                $current_time,$current_loss = .\Httping-CloudflareIP.PS1 $CurrentIP $count $check_domain
-                if($current_time -eq 0 -or $current_loss -gt $loss_rate_limit -or $test_time -lt $current_time) {
+            elseif ($current_loss -gt $loss_rate_limit -or $test_time -lt $current_time) {
+                $current_time, $current_loss = .\Httping-CloudflareIP.PS1 $CurrentIP $count $check_domain
+                if ($current_loss -gt $loss_rate_limit -or $test_time -lt $current_time) {
                     return $test_ip
                 }
             }
@@ -110,9 +110,9 @@ ElseIf ($CurrentIP.Contains(':')) {
             if ($test_time -eq 0 -or $test_loss -gt $loss_rate_limit) {
                 continue
             }
-            elseif ($current_time -eq 0 -or $current_loss -gt $loss_rate_limit -or $test_time -lt $current_time) {
-                $current_time,$current_loss = .\Httping-CloudflareIP.PS1 $CurrentIP $count $check_domain
-                if($current_time -eq 0 -or $current_loss -gt $loss_rate_limit -or $test_time -lt $current_time) {
+            elseif ($current_loss -gt $loss_rate_limit -or $test_time -lt $current_time) {
+                $current_time, $current_loss = .\Httping-CloudflareIP.PS1 $CurrentIP $count $check_domain
+                if ($current_loss -gt $loss_rate_limit -or $test_time -lt $current_time) {
                     return $test_ip
                 }
             }
