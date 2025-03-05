@@ -12,7 +12,7 @@ This is because the aforementioned features have the following drawbacks:
 * They can burden Cloudflare and lead to being flagged as abusive by Cloudflare.
 
 ## Usage
-1. Edit the script Find-BetterCloudflareIP.PS1 and fill in the parameters as needed.
+1. Edit the script `Find-BetterCloudflareIP.PS1` and fill in the parameters as needed.
 2. Run the script:
 ```PowerShell
 .\Find-BetterCloudFlareIP.PS1 <CurrentIP>
