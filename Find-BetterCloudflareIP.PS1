@@ -106,7 +106,7 @@ ElseIf ($CurrentIP.Contains(':')) {
     Get-Content -Path IPv6.Txt | ForEach-Object {
         If ($_.Contains('/')) {
             $test_ip = Get-RandomIPv6FromCidr $_
-            $test_time,$test_loss = .\Httping-CloudflareIP.PS1 $test_ip $count $check_domain
+            $test_time, $test_loss = .\Httping-CloudflareIP.PS1 $test_ip $count $check_domain
             if ($test_time -eq 0 -or $test_loss -gt $loss_rate_limit) {
                 continue
             }
