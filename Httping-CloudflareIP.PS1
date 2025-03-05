@@ -14,10 +14,11 @@ For ($i = 1; $i -lt $Count + 1; $i++) {
     $time = Httping $IP $CheckDomain
     if ($time -eq 0) {
         $loss_sum++
-        Write-Debug "#$i loss"
+        Write-Host "#$i loss"
+        Start-Sleep 1
         continue
     }
-    else {
+        Write-Host "#$i time: ${time}s"
         Write-Debug "#$i time: ${time}s"
         $time_sum = $time_sum + $time
     }
