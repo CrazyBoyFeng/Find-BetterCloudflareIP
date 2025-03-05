@@ -26,4 +26,5 @@ For ($i = 1; $i -lt $Count + 1; $i++) {
 }
 $time_avg = $time_sum / $Count
 Write-Host "Average time: ${time_avg}s"
+Write-Host ""
 return $time_avg
