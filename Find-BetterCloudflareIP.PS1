@@ -1,6 +1,6 @@
 Param($CurrentIP)
-$count = 4 # httping count of each ip
-$loss_rate_limit = [float]0.0 # filter result greater than this loss rate limit
+$count = 5 # httping count of each ip
+$timeout = 5.0 # filter result less than this timeout
 $check_domain = 'cf.xiu2.xyz' # Recommend to use your own
 
 Set-Location -Path $PSScriptRoot
@@ -87,20 +87,21 @@ function Get-RandomIPv6FromCidr {
     return $randomIP
 }
 
-$current_time, $current_loss = .\Httping-CloudflareIP.PS1 $CurrentIP $count $check_domain
+$current_time = .\Httping-CloudflareIP.PS1 $CurrentIP $count $timeout $check_domain
 $test_time = [float]0
 If ($CurrentIP.Contains('.')) {
     Get-Content -Path IPv4.Txt | ForEach-Object {
         If ($_.Contains('/')) {
             $test_ip = Get-RandomIPv4FromCidr $_
-            $test_time, $test_loss = .\Httping-CloudflareIP.PS1 $test_ip $count $check_domain
-            if ($test_time -eq 0 -or $test_loss -gt $loss_rate_limit) {
-                continue
+            $test_time = .\Httping-CloudflareIP.PS1 $test_ip $count $timeout $check_domain
+            if ($test_time -eq 0) {
+                return
             }
-            elseif ($current_loss -gt $loss_rate_limit -or $test_time -lt $current_time) {
-                $current_time, $current_loss = .\Httping-CloudflareIP.PS1 $CurrentIP $count $check_domain
-                if ($current_loss -gt $loss_rate_limit -or $test_time -lt $current_time) {
-                    return $test_ip
+            elseif ($current_time -eq 0 -or $test_time -lt $current_time) {
+                $current_time = .\Httping-CloudflareIP.PS1 $CurrentIP $count $timeout $check_domain
+                if ($current_time -eq 0 -or $test_time -lt $current_time) {
+                    Write-Output $test_ip
+                    exit
                 }
             }
         }
@@ -110,14 +111,15 @@ ElseIf ($CurrentIP.Contains(':')) {
     Get-Content -Path IPv6.Txt | ForEach-Object {
         If ($_.Contains('/')) {
             $test_ip = Get-RandomIPv6FromCidr $_
-            $test_time, $test_loss = .\Httping-CloudflareIP.PS1 $test_ip $count $check_domain
-            if ($test_time -eq 0 -or $test_loss -gt $loss_rate_limit) {
-                continue
+            $test_time = .\Httping-CloudflareIP.PS1 $test_ip $count $timeout $check_domain
+            if ($test_time -eq 0) {
+                return
             }
-            elseif ($current_loss -gt $loss_rate_limit -or $test_time -lt $current_time) {
-                $current_time, $current_loss = .\Httping-CloudflareIP.PS1 $CurrentIP $count $check_domain
-                if ($current_loss -gt $loss_rate_limit -or $test_time -lt $current_time) {
-                    return $test_ip
+            elseif ($current_time -eq 0 -or $test_time -lt $current_time) {
+                $current_time = .\Httping-CloudflareIP.PS1 $CurrentIP $count $timeout $check_domain
+                if ($current_time -eq 0 -or $test_time -lt $current_time) {
+                    Write-Output $test_ip
+                    exit
                 }
             }
         }

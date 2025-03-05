@@ -1,29 +1,29 @@
-Param($IP, $Count = 4, $CheckDomain = "cf.xiu2.xyz")
+Param($IP, $Count = 5, $Timeout = 5, $CheckDomain = "cf.xiu2.xyz")
 
 Function Httping {
-    Param($IP, $CheckDomain)
-    $result = (curl.exe --head https://$CheckDomain/cdn-cgi/trace --resolve ${CheckDomain}:443:${IP} --write-out '%{time_total}' --output NUL --silent)
-    $time = try { [float] $result } catch { 0 }
-    Return $time
+    # 获取连接时间和HTTP状态码
+    $result = (curl.exe --head https://${CheckDomain}/cdn-cgi/trace --resolve ${CheckDomain}:443:${IP} --max-time ${Timeout} --write-out '%{time_total} %{http_code}' --output NUL --silent)
+    $parts = $result.Split(' ')
+    $time = try { [float] $parts[0] } catch { 0 }
+    $status = try { [int] $parts[1] } catch { 0 }
+    Return $time, $status
 }
 
 Write-Host "HTTPing Cloudflare IP: $IP"
 $time_sum = [float]0
-$loss_sum = 0
 For ($i = 1; $i -lt $Count + 1; $i++) {        
-    $time = Httping $IP $CheckDomain
-    if ($time -eq 0) {
-        $loss_sum++
-        Write-Host "#$i loss"
-        continue
+    $time, $status = Httping $IP $CheckDomain $Timeout
+    if ($time -eq 0 -or $status -eq 0) {
+        Write-Host "#$i loss (Status: $status)"
+        $time_sum = 0
+        break
     }
     else {
-        Write-Host "#$i time: ${time}s"
+        Write-Host "#$i time: ${time}s (Status: ${status})"
         $time_sum = $time_sum + $time
     }
     Start-Sleep 1
 }
-$time_avg = $time_sum / ($Count - $loss_sum)
-$loss_rate = [float]$loss_sum / $Count
-Write-Host "Result: average time = ${time_avg}s, loss rate = $loss_rate"
-return $time_avg, $loss_rate
+$time_avg = $time_sum / $Count
+Write-Host "Average time: ${time_avg}s"
+return $time_avg
