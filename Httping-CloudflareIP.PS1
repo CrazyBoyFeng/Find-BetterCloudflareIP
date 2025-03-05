@@ -15,7 +15,6 @@ For ($i = 1; $i -lt $Count + 1; $i++) {
     if ($time -eq 0) {
         $loss_sum++
         Write-Host "#$i loss"
-        Start-Sleep 1
         continue
     }
     else {
