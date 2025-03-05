@@ -2,7 +2,7 @@ Param($IP, $Count = 4, $CheckDomain = "cf.xiu2.xyz")
 
 Function Httping {
     Param($IP, $CheckDomain)
-    $result = (curl.exe --head https://$CheckDomain/cdn-cgi/trace --resolve $CheckDomain:443:$IP --write-out '%{time_total}' --output NUL --silent)
+    $result = (curl.exe --head https://$CheckDomain/cdn-cgi/trace --resolve ${CheckDomain}:443:${IP} --write-out '%{time_total}' --output NUL --silent)
     $time = try { [float] $result } catch { 0 }
     Return $time
 }
