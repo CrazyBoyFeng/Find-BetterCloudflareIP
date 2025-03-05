@@ -64,12 +64,12 @@ function Get-RandomIPv4FromCidr {
 
 function Get-RandomIPv6FromCidridr {
     param (
-        [string]$Cidridr
+        [string]$Cidr
     )
 
     # 提取网络地址和前缀长度
-    $networkAddress = $CIDR.Split('/')[0]
-    $prefixLength = [int]($CIDR.Split('/')[1])
+    $networkAddress = $Cidr.Split('/')[0]
+    $prefixLength = [int]($Cidr.Split('/')[1])
 
     # 将 IPv6 地址转换为字节数组
     $ipBytes = [System.Net.IPAddress]::Parse($networkAddress).GetAddressBytes()
