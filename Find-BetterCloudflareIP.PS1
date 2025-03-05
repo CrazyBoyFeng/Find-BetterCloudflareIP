@@ -8,20 +8,18 @@ Function Test-IP {
     Param($Count, $CheckDomain, $IP)
     Write-Host "Test IP: $IP"
     $time_sum = [float]0
-    $loss_sum = 0
     For ($i = 1; $i -lt $Count + 1; $i++) {        
         $time = .\Httping-IP.PS1 $CheckDomain $IP
         if ($time -eq 0) {
-            $loss_sum++
             Write-Host "Test $IP loss"
-            break
+            return 0
         }
         else {
             $time_sum = $time_sum + $time
         }
         Start-Sleep 1
     }
-    $time = $time_sum / ($Count - $loss_sum)
+    $time = $time_sum / $Count
     Write-Host "Test $IP time $time"
     return $time
 }
@@ -88,3 +86,45 @@ function Get-RandomIPv6FromCidr {
 
     return $randomIP
 }
+
+$current_time = Test-IP $count $check_domain $CurrentIP
+$test_time = [float]0
+If ($CurrentIP.Contains('.')) {
+    Get-Content -Path IPv4.Txt | ForEach-Object {
+        If ($_.Contains('/')) {
+            $test_ip = Get-RandomIPv4FromCidr $_
+            $test_time = Test-IP $count $check_domain $test_ip
+            if ($test_time -eq 0) {
+                continue
+            }
+            elseif ($test_time -lt $current_time) {
+                $current_time = Test-IP $count $check_domain $CurrentIP
+                if ($current_time -eq 0 -or $test_time -lt $current_time) {
+                    return $test_ip
+                }
+            }
+        }
+    }
+}
+ElseIf ($CurrentIP.Contains(':')) {
+    Get-Content -Path IPv6.Txt | ForEach-Object {
+        If ($_.Contains('/')) {
+            $test_ip = Get-RandomIPv6FromCidr $_
+            $test_time = Test-IP $count $check_domain $test_ip
+            if ($test_time -eq 0) {
+                continue
+            }
+            elseif ($test_time -lt $current_time) {
+                $current_time = Test-IP $count $check_domain $CurrentIP
+                if ($current_time -eq 0 -or $test_time -lt $current_time) {
+                    return $test_ip
+                }
+            }
+        }
+    }
+}
+Else {
+    Write-Error "Invalid IP $CurrentIP"
+    Exit 1
+}
+Return $CurrentIP
