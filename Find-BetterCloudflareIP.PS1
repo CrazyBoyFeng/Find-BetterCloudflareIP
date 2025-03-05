@@ -51,33 +51,37 @@ function Get-RandomIPv4FromCidr {
 
 function Get-RandomIPv6FromCidr {
     param (
-        [string]$Cidr
+        [string]$Cidr # CIDR格式的IPv6范围,如"2606:4700::/32"
     )
 
     # 提取网络地址和前缀长度
     $networkAddress = $Cidr.Split('/')[0]
     $prefixLength = [int]($Cidr.Split('/')[1])
 
-    # 将 IPv6 地址转换为字节数组
+    # 将IPv6地址转换为字节数组
     $ipBytes = [System.Net.IPAddress]::Parse($networkAddress).GetAddressBytes()
 
-    # 计算掩码
+    # 计算掩码字节数组
     $maskBytes = New-Object byte[] 16
     for ($i = 0; $i -lt 16; $i++) {
         $bitsRemaining = [Math]::Max(0, $prefixLength - $i * 8)
         $maskBytes[$i] = if ($bitsRemaining -ge 8) { 0xFF } else { (-1 -shl (8 - $bitsRemaining)) -band 0xFF }
     }
 
-    # 生成随机 IPv6 地址
+    # 生成随机IPv6地址
     $randomBytes = New-Object byte[] 16
     for ($i = 0; $i -lt 16; $i++) {
-        $networkByte = $ipBytes[$i]
-        $maskByte = $maskBytes[$i]
-        $randomByte = Get-Random -Minimum ($networkByte -band $maskByte) -Maximum 256
-        $randomBytes[$i] = $randomByte
+        if ($i * 8 -lt $prefixLength) {
+            # 网络部分保持不变
+            $randomBytes[$i] = $ipBytes[$i]
+        }
+        else {
+            # 主机部分随机生成
+            $randomBytes[$i] = Get-Random -Minimum 0 -Maximum 256
+        }
     }
 
-    # 转换为 IPv6 地址
+    # 转换为IPv6地址字符串
     $randomIP = [System.Net.IPAddress]::new($randomBytes).ToString()
 
     return $randomIP
