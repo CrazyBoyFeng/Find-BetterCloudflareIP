@@ -55,7 +55,7 @@ function Get-RandomIPv4FromCidr {
     return $randomIP
 }
 
-function Get-RandomIPv6FromCidridr {
+function Get-RandomIPv6FromCidr {
     param (
         [string]$Cidr
     )
@@ -88,3 +88,4 @@ function Get-RandomIPv6FromCidridr {
 
     return $randomIP
 }
+
