@@ -9,12 +9,12 @@ function Get-RandomIPv4FromCidr {
     param (
         [string]$Cidr # CIDR格式的IPv4范围,如"192.168.1.0/24"
     )
-
+    
     # 解析CIDR格式
     $parts = $Cidr.Split('/')
     $networkAddress = $parts[0]
     $subnetMaskLength = [int]$parts[1]
-
+    
     # 将网络地址转换为字节数组
     $networkBytes = [System.Net.IPAddress]::Parse($networkAddress).GetAddressBytes()
     
@@ -30,7 +30,7 @@ function Get-RandomIPv4FromCidr {
     # 将主机号转换为字节数组
     $hostBytes = [System.BitConverter]::GetBytes($hostNumber)
     [Array]::Reverse($hostBytes)
-
+    
     # 合并网络部分和主机部分
     $resultBytes = @(0, 0, 0, 0)
     for ($i = 0; $i -lt 4; $i++) {
@@ -45,7 +45,7 @@ function Get-RandomIPv4FromCidr {
     
     # 构建IP地址字符串
     $randomIP = "$($resultBytes[0]).$($resultBytes[1]).$($resultBytes[2]).$($resultBytes[3])"
-
+    
     return $randomIP
 }
 
