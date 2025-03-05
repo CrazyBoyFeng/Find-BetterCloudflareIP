@@ -4,7 +4,7 @@ $check_domain = 'cf.xiu2.xyz' # Recommend to use your own
 
 Set-Location -Path $PSScriptRoot
 
-Test-IP {
+Function Test-IP {
     Param($Count, $CheckDomain, $IP)
     Write-Host "Test IP: $IP"
     $time_sum = [float]0
@@ -88,4 +88,3 @@ function Get-RandomIPv6FromCidr {
 
     return $randomIP
 }
-
