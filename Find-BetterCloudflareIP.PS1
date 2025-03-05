@@ -7,29 +7,44 @@ Set-Location -Path $PSScriptRoot
 
 function Get-RandomIPv4FromCidr {
     param (
-        [string]$Cidr
+        [string]$Cidr # CIDR格式的IPv4范围,如"192.168.1.0/24"
     )
 
-    # 提取网络地址和子网掩码
-    $networkAddress = $Cidr.Split('/')[0]
-    $subnetMaskLength = [int]($Cidr.Split('/')[1])
+    # 解析CIDR格式
+    $parts = $Cidr.Split('/')
+    $networkAddress = $parts[0]
+    $subnetMaskLength = [int]$parts[1]
 
-    # 计算网络地址的整数形式
-    $ipBytes = [System.Net.IPAddress]::Parse($networkAddress).GetAddressBytes()
-    $networkAddressInt = [System.BitConverter]::ToUInt32($ipBytes, 0)
+    # 将网络地址转换为字节数组
+    $networkBytes = [System.Net.IPAddress]::Parse($networkAddress).GetAddressBytes()
+    
+    # 计算主机位数
+    $hostBits = 32 - $subnetMaskLength
+    
+    # 计算可用主机数
+    $hostCount = [math]::Pow(2, $hostBits)
+    
+    # 随机选择一个主机号
+    $hostNumber = Get-Random -Minimum 0 -Maximum $hostCount
+    
+    # 将主机号转换为字节数组
+    $hostBytes = [System.BitConverter]::GetBytes($hostNumber)
+    [Array]::Reverse($hostBytes)
 
-    # 计算子网掩码
-    $subnetMask = [System.Net.IPAddress]::Parse(([math]::Pow(2, 32) - [math]::Pow(2, 32 - $subnetMaskLength))).GetAddressBytes()
-    $subnetMaskInt = [System.BitConverter]::ToUInt32($subnetMask, 0)
-
-    # 计算网络地址和广播地址
-    $networkStart = $networkAddressInt -band $subnetMaskInt
-    $networkEnd = $networkStart -bor (-bnot $subnetMaskInt)
-
-    # 随机生成一个 IP 地址
-    $randomIPInt = Get-Random -Minimum $networkStart -Maximum $networkEnd
-    $randomIPBytes = [System.BitConverter]::GetBytes($randomIPInt)
-    $randomIP = [System.Net.IPAddress]::new($randomIPBytes).ToString()
+    # 合并网络部分和主机部分
+    $resultBytes = @(0, 0, 0, 0)
+    for ($i = 0; $i -lt 4; $i++) {
+        $networkBits = [Math]::Min(8, $subnetMaskLength - $i * 8)
+        if ($networkBits -gt 0) {
+            $resultBytes[$i] = $networkBytes[$i]
+        }
+        else {
+            $resultBytes[$i] = $hostBytes[$i]
+        }
+    }
+    
+    # 构建IP地址字符串
+    $randomIP = "$($resultBytes[0]).$($resultBytes[1]).$($resultBytes[2]).$($resultBytes[3])"
 
     return $randomIP
 }
