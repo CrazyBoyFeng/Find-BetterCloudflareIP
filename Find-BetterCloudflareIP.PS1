@@ -1,28 +1,9 @@
 Param($CurrentIP)
 $count = 4 # httping count of each ip
+$loss_rate_limit = [float]0.0 # filter result greater than this loss rate limit
 $check_domain = 'cf.xiu2.xyz' # Recommend to use your own
 
 Set-Location -Path $PSScriptRoot
-
-Function Test-IP {
-    Param($Count, $CheckDomain, $IP)
-    Write-Host "Test IP: $IP"
-    $time_sum = [float]0
-    For ($i = 1; $i -lt $Count + 1; $i++) {        
-        $time = .\Httping-IP.PS1 $CheckDomain $IP
-        if ($time -eq 0) {
-            Write-Host "Test $IP loss"
-            return 0
-        }
-        else {
-            $time_sum = $time_sum + $time
-        }
-        Start-Sleep 1
-    }
-    $time = $time_sum / $Count
-    Write-Host "Test $IP time $time"
-    return $time
-}
 
 function Get-RandomIPv4FromCidr {
     param (
@@ -87,19 +68,19 @@ function Get-RandomIPv6FromCidr {
     return $randomIP
 }
 
-$current_time = Test-IP $count $check_domain $CurrentIP
+$current_time,$current_loss = .\Httping-CloudflareIP.PS1 $CurrentIP $count $check_domain
 $test_time = [float]0
 If ($CurrentIP.Contains('.')) {
     Get-Content -Path IPv4.Txt | ForEach-Object {
         If ($_.Contains('/')) {
             $test_ip = Get-RandomIPv4FromCidr $_
-            $test_time = Test-IP $count $check_domain $test_ip
-            if ($test_time -eq 0) {
+            $test_time,$test_loss = .\Httping-CloudflareIP.PS1 $test_ip $count $check_domain
+            if ($test_time -eq 0 -or $test_loss -gt $loss_rate_limit) {
                 continue
             }
-            elseif ($test_time -lt $current_time) {
-                $current_time = Test-IP $count $check_domain $CurrentIP
-                if ($current_time -eq 0 -or $test_time -lt $current_time) {
+            elseif ($current_time -eq 0 -or $current_loss -gt $loss_rate_limit -or $test_time -lt $current_time) {
+                $current_time,$current_loss = .\Httping-CloudflareIP.PS1 $CurrentIP $count $check_domain
+                if($current_time -eq 0 -or $current_loss -gt $loss_rate_limit -or $test_time -lt $current_time) {
                     return $test_ip
                 }
             }
@@ -110,13 +91,13 @@ ElseIf ($CurrentIP.Contains(':')) {
     Get-Content -Path IPv6.Txt | ForEach-Object {
         If ($_.Contains('/')) {
             $test_ip = Get-RandomIPv6FromCidr $_
-            $test_time = Test-IP $count $check_domain $test_ip
-            if ($test_time -eq 0) {
+            $test_time,$test_loss = .\Httping-CloudflareIP.PS1 $test_ip $count $check_domain
+            if ($test_time -eq 0 -or $test_loss -gt $loss_rate_limit) {
                 continue
             }
-            elseif ($test_time -lt $current_time) {
-                $current_time = Test-IP $count $check_domain $CurrentIP
-                if ($current_time -eq 0 -or $test_time -lt $current_time) {
+            elseif ($current_time -eq 0 -or $current_loss -gt $loss_rate_limit -or $test_time -lt $current_time) {
+                $current_time,$current_loss = .\Httping-CloudflareIP.PS1 $CurrentIP $count $check_domain
+                if($current_time -eq 0 -or $current_loss -gt $loss_rate_limit -or $test_time -lt $current_time) {
                     return $test_ip
                 }
             }
