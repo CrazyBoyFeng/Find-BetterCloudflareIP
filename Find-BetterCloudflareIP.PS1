@@ -84,6 +84,7 @@ function Get-RandomIPv6FromCidr {
     return $randomIP
 }
 
+Write-Host "Current Cloudflare IP: $CurrentIP"
 $current_time = .\Httping-CloudflareIP.PS1 $CurrentIP $count $timeout $check_domain
 $test_time = [float]0
 If ($CurrentIP.Contains('.')) {
@@ -97,6 +98,7 @@ If ($CurrentIP.Contains('.')) {
             elseif ($current_time -eq 0 -or $test_time -lt $current_time) {
                 $current_time = .\Httping-CloudflareIP.PS1 $CurrentIP $count $timeout $check_domain
                 if ($current_time -eq 0 -or $test_time -lt $current_time) {
+                    Write-Host "Better Cloudflare IP: $test_ip"
                     Write-Output $test_ip
                     exit
                 }
@@ -115,6 +117,7 @@ ElseIf ($CurrentIP.Contains(':')) {
             elseif ($current_time -eq 0 -or $test_time -lt $current_time) {
                 $current_time = .\Httping-CloudflareIP.PS1 $CurrentIP $count $timeout $check_domain
                 if ($current_time -eq 0 -or $test_time -lt $current_time) {
+                    Write-Host "Better Cloudflare IP: $test_ip"
                     Write-Output $test_ip
                     exit
                 }
@@ -126,4 +129,5 @@ Else {
     Write-Error "Invalid IP $CurrentIP"
     Exit 1
 }
+Write-Host "No better Cloudflare IP"
 Return $CurrentIP
