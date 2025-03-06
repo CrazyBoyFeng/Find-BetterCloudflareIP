@@ -11,6 +11,13 @@ This is because the aforementioned features have the following drawbacks:
 * They can cause ISPs to impose restrictions due to the load.
 * They can burden Cloudflare and lead to being flagged as abusive by Cloudflare.
 
+## Requirements
+* PowerShell
+PowerShell is built into Windows Vista and later versions of Windows.
+* curl
+curl is built into Windows 10 1709 and later versions of Windows.
+For earlier versions of Windows, you need to install curl manually.
+
 ## Usage
 1. Edit the script `Find-BetterCloudflareIP.PS1` and fill in the parameters as needed.
 2. Run the script:
