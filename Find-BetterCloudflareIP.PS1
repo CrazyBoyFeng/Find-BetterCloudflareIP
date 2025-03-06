@@ -87,7 +87,7 @@ function Get-RandomIPv6FromCidr {
 $current_time = .\Httping-CloudflareIP.PS1 $CurrentIP $count $timeout $check_domain
 $test_time = [float]0
 If ($CurrentIP.Contains('.')) {
-    Get-Content -Path IPv4.Txt | ForEach-Object {
+    Get-Content -Path CloudflareIPv4.Txt | ForEach-Object {
         If ($_.Contains('/')) {
             $test_ip = Get-RandomIPv4FromCidr $_
             $test_time = .\Httping-CloudflareIP.PS1 $test_ip $count $timeout $check_domain
@@ -105,7 +105,7 @@ If ($CurrentIP.Contains('.')) {
     }
 }
 ElseIf ($CurrentIP.Contains(':')) {
-    Get-Content -Path IPv6.Txt | ForEach-Object {
+    Get-Content -Path CloudflareIPv6.Txt | ForEach-Object {
         If ($_.Contains('/')) {
             $test_ip = Get-RandomIPv6FromCidr $_
             $test_time = .\Httping-CloudflareIP.PS1 $test_ip $count $timeout $check_domain
