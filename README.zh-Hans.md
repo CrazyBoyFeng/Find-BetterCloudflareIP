@@ -9,9 +9,9 @@
 * 会对 Cloudflare 造成负担导致被 Cloudflare 判定为滥用。
 
 ## 运行环境
-* PowerShell
+* PowerShell  
 Windows Vista 及之后的 Windows 操作系统都内置了 PowerShell。
-* curl
+* curl  
 Windows 10 1709 及之后的 Windows 操作系统都内置了 curl。  
 若使用早期的 Windows 操作系统，则需要自行安装 curl。
 
