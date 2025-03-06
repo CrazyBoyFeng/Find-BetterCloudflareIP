@@ -14,38 +14,35 @@ function Get-RandomIPv4FromCidr {
     $parts = $Cidr.Split('/')
     $networkAddress = $parts[0]
     $subnetMaskLength = [int]$parts[1]
-    
-    # 将网络地址转换为字节数组
+        
+    # 将网络地址转换为32位整数
     $networkBytes = [System.Net.IPAddress]::Parse($networkAddress).GetAddressBytes()
-    
+    [Array]::Reverse($networkBytes)
+    $networkInt = [System.BitConverter]::ToUInt32($networkBytes, 0)
+        
     # 计算主机位数
     $hostBits = 32 - $subnetMaskLength
-    
-    # 计算可用主机数
-    $hostCount = [math]::Pow(2, $hostBits)
-    
+        
+    # 计算网络掩码
+    $mask = 0xFFFFFFFF -shl $hostBits
+        
+    # 计算网络起始地址
+    $networkStart = $networkInt -band $mask
+        
     # 随机选择一个主机号
-    $hostNumber = Get-Random -Minimum 0 -Maximum $hostCount
-    
-    # 将主机号转换为字节数组
-    $hostBytes = [System.BitConverter]::GetBytes($hostNumber)
-    [Array]::Reverse($hostBytes)
-    
-    # 合并网络部分和主机部分
-    $resultBytes = @(0, 0, 0, 0)
-    for ($i = 0; $i -lt 4; $i++) {
-        $networkBits = [Math]::Min(8, $subnetMaskLength - $i * 8)
-        if ($networkBits -gt 0) {
-            $resultBytes[$i] = $networkBytes[$i]
-        }
-        else {
-            $resultBytes[$i] = $hostBytes[$i]
-        }
-    }
+    $maxHost = [int][math]::Pow(2, $hostBits)
+    $hostNumber = Get-Random -Minimum 0 -Maximum $maxHost
+        
+    # 生成最终IP地址
+    $randomIPInt = $networkStart + $hostNumber
+        
+    # 转换回IP地址字符串
+    $randomBytes = [System.BitConverter]::GetBytes($randomIPInt)
+    [Array]::Reverse($randomBytes)
     
     # 构建IP地址字符串
-    $randomIP = "$($resultBytes[0]).$($resultBytes[1]).$($resultBytes[2]).$($resultBytes[3])"
-    
+    $randomIP = "$($randomBytes[0]).$($randomBytes[1]).$($randomBytes[2]).$($randomBytes[3])"
+        
     return $randomIP
 }
 
