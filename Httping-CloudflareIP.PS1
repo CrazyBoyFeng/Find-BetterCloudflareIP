@@ -13,7 +13,7 @@ Write-Host "HTTPing Cloudflare IP: $IP"
 $time_sum = [float]0
 For ($i = 1; $i -lt $Count + 1; $i++) {        
     $time, $status = Httping $IP $CheckDomain $Timeout
-    if ($time -eq 0 -or $status -eq 0) {
+    if ($time -eq 0 -or $status -ne 200) {
         Write-Host "#$i loss (Status: $status)"
         $time_sum = 0
         break
