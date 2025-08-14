@@ -2,7 +2,7 @@ Param($IP, $Count = 5, $Timeout = 5, $CheckDomain = "cf.xiu2.xyz")
 
 Function Httping {
     # 获取连接时间和HTTP状态码
-    $result = (curl.exe https://${CheckDomain}/cdn-cgi/trace --resolve ${CheckDomain}:443:${IP} --max-time ${Timeout} --write-out '%{time_total} %{http_code}' --output NUL --silent)
+    $result = (curl.exe https://${CheckDomain}/cdn-cgi/speculation --resolve ${CheckDomain}:443:${IP} --max-time ${Timeout} --write-out '%{time_total} %{http_code}' --output NUL --silent)
     $parts = $result.Split(' ')
     $time = try { [float] $parts[0] } catch { 0 }
     $status = try { [int] $parts[1] } catch { 0 }
