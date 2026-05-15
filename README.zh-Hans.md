@@ -15,7 +15,7 @@ Windows Vista 及之后的 Windows 操作系统都内置了 PowerShell。
 ## 用法
 运行脚本：
 ```PowerShell
-.\Find-BetterCloudflareIP.PS1 -CurrentIP <IP> [-AllIP] [-Count <Int>] [-Timeout <Double>] [-CheckDomain <String>]
+.\Find-BetterCloudflareIP.PS1 -CurrentIP <IP> [-AllIP] [-Count <Int>] [-Timeout <Int>] [-CheckDomain <String>]
 ```
 
 ### 参数说明
@@ -25,7 +25,7 @@ Windows Vista 及之后的 Windows 操作系统都内置了 PowerShell。
 | `-CurrentIP` | 是 | - | 当前 Cloudflare IP，用于比较 |
 | `-AllIP` | 否 | - | 同时检测 IPv4 和 IPv6 |
 | `-Count` | 否 | 5 | 每个 IP 的 httping 次数 |
-| `-Timeout` | 否 | 5.0 | 超时阈值（秒） |
+| `-Timeout` | 否 | 5 | 超时阈值（秒） |
 | `-CheckDomain` | 否 | cf.xiu2.xyz | 检测用域名，建议使用自己的域名 |
 
 ### 使用示例

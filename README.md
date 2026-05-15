@@ -18,7 +18,7 @@ PowerShell is built into Windows Vista and later versions of Windows.
 ## Usage
 Run the script:
 ```PowerShell
-.\Find-BetterCloudflareIP.PS1 -CurrentIP <IP> [-AllIP] [-Count <Int>] [-Timeout <Double>] [-CheckDomain <String>]
+.\Find-BetterCloudflareIP.PS1 -CurrentIP <IP> [-AllIP] [-Count <Int>] [-Timeout <Int>] [-CheckDomain <String>]
 ```
 
 ### Parameters
@@ -28,7 +28,7 @@ Run the script:
 | `-CurrentIP` | Yes | - | Current Cloudflare IP to compare |
 | `-AllIP` | No | - | Check both IPv4 and IPv6 |
 | `-Count` | No | 5 | Number of httping requests per IP |
-| `-Timeout` | No | 5.0 | Timeout threshold in seconds |
+| `-Timeout` | No | 5 | Timeout threshold in seconds |
 | `-CheckDomain` | No | cf.xiu2.xyz | Domain to check, recommend using your own |
 
 ### Examples

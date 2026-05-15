@@ -1,8 +1,8 @@
 Param(
     [Parameter(Mandatory=$true)]$IP,
-    $Count = 5,
-    $Timeout = 5,
-    $CheckDomain = "cf.xiu2.xyz"
+    [int]$Count = 5,
+    [int]$Timeout = 5,
+    [string]$CheckDomain = "cf.xiu2.xyz"
 )
 
 Function Get-HttpPingTime {

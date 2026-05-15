@@ -2,7 +2,7 @@ Param(
     [Parameter(Mandatory=$true, HelpMessage='Current Cloudflare IP to compare')]$CurrentIP,
     [Parameter(HelpMessage='Check both IPv4 and IPv6')][switch]$AllIP,
     [Parameter(HelpMessage='Number of httping requests per IP')][int]$Count = 5,
-    [Parameter(HelpMessage='Timeout threshold in seconds')][double]$Timeout = 5.0,
+    [Parameter(HelpMessage='Timeout threshold in seconds')][int]$Timeout = 5,
     [Parameter(HelpMessage='Domain to check, recommend using your own')][string]$CheckDomain = 'cf.xiu2.xyz'
 )
 
