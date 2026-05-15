@@ -1,4 +1,4 @@
-Param($CurrentIP)
+Param($CurrentIP, [switch]$AllIP)
 $count = 5 # httping count of each ip
 $timeout = 5.0 # filter result less than this timeout
 $check_domain = 'cf.xiu2.xyz' # Recommend to use your own
@@ -84,13 +84,15 @@ function Get-RandomIPv6FromCidr {
     return $randomIP
 }
 
-Write-Host "Current Cloudflare IP: $CurrentIP"
-$current_time = .\Httping-CloudflareIP.PS1 $CurrentIP $count $timeout $check_domain
-$test_time = [float]0
-If ($CurrentIP.Contains('.')) {
-    Get-Content -Path CloudflareIPv4.Txt | ForEach-Object {
+function Test-IP {
+    param(
+        [string]$FilePath,
+        [scriptblock]$GetIP
+    )
+
+    Get-Content -Path $FilePath | ForEach-Object {
         If ($_.Contains('/')) {
-            $test_ip = Get-RandomIPv4FromCidr $_
+            $test_ip = & $GetIP $_
             $test_time = .\Httping-CloudflareIP.PS1 $test_ip $count $timeout $check_domain
             if ($test_time -eq 0) {
                 return
@@ -106,28 +108,31 @@ If ($CurrentIP.Contains('.')) {
         }
     }
 }
+
+function Test-IPv4 {
+    Test-IP CloudflareIPv4.Txt ${function:Get-RandomIPv4FromCidr}
+}
+
+function Test-IPv6 {
+    Test-IP CloudflareIPv6.Txt ${function:Get-RandomIPv6FromCidr}
+}
+
+Write-Host "Current Cloudflare IP: $CurrentIP"
+$current_time = .\Httping-CloudflareIP.PS1 $CurrentIP $count $timeout $check_domain
+
+If ($AllIP) {
+    Test-IPv6
+    Test-IPv4
+}
 ElseIf ($CurrentIP.Contains(':')) {
-    Get-Content -Path CloudflareIPv6.Txt | ForEach-Object {
-        If ($_.Contains('/')) {
-            $test_ip = Get-RandomIPv6FromCidr $_
-            $test_time = .\Httping-CloudflareIP.PS1 $test_ip $count $timeout $check_domain
-            if ($test_time -eq 0) {
-                return
-            }
-            elseif ($current_time -eq 0 -or $test_time -lt $current_time) {
-                $current_time = .\Httping-CloudflareIP.PS1 $CurrentIP $count $timeout $check_domain
-                if ($current_time -eq 0 -or $test_time -lt $current_time) {
-                    Write-Host "Better Cloudflare IP: $test_ip"
-                    Write-Output $test_ip
-                    exit
-                }
-            }
-        }
-    }
+    Test-IPv6
+}
+ElseIf ($CurrentIP.Contains('.')) {
+    Test-IPv4
 }
 Else {
     Write-Error "Invalid IP $CurrentIP"
-    Exit 1
+    exit
 }
 Write-Host "No better Cloudflare IP"
 Return $CurrentIP
