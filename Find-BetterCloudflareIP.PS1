@@ -1,4 +1,10 @@
 Param($CurrentIP, [switch]$AllIP)
+
+If (-not [System.Net.IPAddress]::TryParse($CurrentIP, [ref]$null)) {
+    Write-Error "Invalid IP $CurrentIP"
+    exit
+}
+
 $count = 5 # httping count of each ip
 $timeout = 5.0 # filter result less than this timeout
 $check_domain = 'cf.xiu2.xyz' # Recommend to use your own
@@ -127,12 +133,8 @@ If ($AllIP) {
 ElseIf ($CurrentIP.Contains(':')) {
     Test-IPv6
 }
-ElseIf ($CurrentIP.Contains('.')) {
-    Test-IPv4
-}
 Else {
-    Write-Error "Invalid IP $CurrentIP"
-    exit
+    Test-IPv4
 }
 Write-Host "No better Cloudflare IP"
 Return $CurrentIP
