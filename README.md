@@ -16,11 +16,45 @@ This is because the aforementioned features have the following drawbacks:
 PowerShell is built into Windows Vista and later versions of Windows.
 
 ## Usage
-1. Edit the script `Find-BetterCloudflareIP.PS1` and fill in the parameters as needed.
-2. Run the script:
+Run the script:
 ```PowerShell
-.\Find-BetterCloudFlareIP.PS1 <CurrentIP>
+.\Find-BetterCloudflareIP.PS1 -CurrentIP <IP> [-AllIP] [-Count <Int>] [-Timeout <Double>] [-CheckDomain <String>]
 ```
+
+### Parameters
+
+| Parameter | Required | Default | Description |
+|-----------|----------|---------|-------------|
+| `-CurrentIP` | Yes | - | Current Cloudflare IP to compare |
+| `-AllIP` | No | - | Check both IPv4 and IPv6 |
+| `-Count` | No | 5 | Number of httping requests per IP |
+| `-Timeout` | No | 5.0 | Timeout threshold in seconds |
+| `-CheckDomain` | No | cf.xiu2.xyz | Domain to check, recommend using your own |
+
+### Examples
+```PowerShell
+# Basic usage
+.\Find-BetterCloudflareIP.PS1 -CurrentIP "1.1.1.1"
+
+# Check both IPv4 and IPv6
+.\Find-BetterCloudflareIP.PS1 -CurrentIP "1.1.1.1" -AllIP
+
+# Custom parameters
+.\Find-BetterCloudflareIP.PS1 -CurrentIP "1.1.1.1" -Count 10 -Timeout 3.0 -CheckDomain "your-domain.com"
+```
+
+### Httping-CloudflareIP.PS1
+This script is called by `Find-BetterCloudflareIP.PS1` internally. You can also use it directly:
+```PowerShell
+.\Httping-CloudflareIP.PS1 -IP <IP> [-Count <Int>] [-Timeout <Int>] [-CheckDomain <String>]
+```
+
+| Parameter | Required | Default | Description |
+|-----------|----------|---------|-------------|
+| `-IP` | Yes | - | IP address to test |
+| `-Count` | No | 5 | Number of httping requests |
+| `-Timeout` | No | 5 | Timeout in seconds |
+| `-CheckDomain` | No | cf.xiu2.xyz | Domain to check |
 
 The script will traverse the corresponding IP address pool list file based on the IP address type. It will randomly select one IP address from each CIDR-formatted IP range for testing.  
 If a faster and lossless IP address is found, the script will return `<BetterIP>`.  

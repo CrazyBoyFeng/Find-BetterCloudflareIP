@@ -1,13 +1,10 @@
-Param($CurrentIP, [switch]$AllIP)
-
-If (-not [System.Net.IPAddress]::TryParse($CurrentIP, [ref]$null)) {
-    Write-Error "Invalid IP $CurrentIP"
-    exit
-}
-
-$count = 5 # httping count of each ip
-$timeout = 5.0 # filter result less than this timeout
-$check_domain = 'cf.xiu2.xyz' # Recommend to use your own
+Param(
+    [Parameter(Mandatory=$true, HelpMessage='Current Cloudflare IP to compare')]$CurrentIP,
+    [Parameter(HelpMessage='Check both IPv4 and IPv6')][switch]$AllIP,
+    [Parameter(HelpMessage='Number of httping requests per IP')][int]$Count = 5,
+    [Parameter(HelpMessage='Timeout threshold in seconds')][double]$Timeout = 5.0,
+    [Parameter(HelpMessage='Domain to check, recommend using your own')][string]$CheckDomain = 'cf.xiu2.xyz'
+)
 
 Set-Location -Path $PSScriptRoot
 
@@ -83,12 +80,12 @@ function Test-IP {
     Get-Content -Path $FilePath | ForEach-Object {
         If ($_.Contains('/')) {
             $test_ip = & $GetIP $_
-            $test_time = .\Httping-CloudflareIP.PS1 $test_ip $count $timeout $check_domain
+            $test_time = .\Httping-CloudflareIP.PS1 $test_ip $Count $Timeout $CheckDomain
             if ($test_time -eq 0) {
                 return
             }
             elseif ($current_time -eq 0 -or $test_time -lt $current_time) {
-                $current_time = .\Httping-CloudflareIP.PS1 $CurrentIP $count $timeout $check_domain
+                $current_time = .\Httping-CloudflareIP.PS1 $CurrentIP $Count $Timeout $CheckDomain
                 if ($current_time -eq 0 -or $test_time -lt $current_time) {
                     Write-Host "Better Cloudflare IP: $test_ip"
                     Write-Output $test_ip
@@ -108,7 +105,7 @@ function Test-IPv6 {
 }
 
 Write-Host "Current Cloudflare IP: $CurrentIP"
-$current_time = .\Httping-CloudflareIP.PS1 $CurrentIP $count $timeout $check_domain
+$current_time = .\Httping-CloudflareIP.PS1 $CurrentIP $Count $Timeout $CheckDomain
 
 If ($AllIP) {
     Test-IPv6
