@@ -11,6 +11,9 @@
 ## 运行环境
 * PowerShell  
 Windows Vista 及之后的 Windows 操作系统都内置了 PowerShell。
+* curl  
+Windows 10 1709 及之后的 Windows 操作系统都内置了 curl。  
+若使用早期的 Windows 操作系统，则需要自行安装 curl。
 
 ## 用法
 运行脚本：
