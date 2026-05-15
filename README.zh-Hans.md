@@ -18,6 +18,10 @@ Windows Vista 及之后的 Windows 操作系统都内置了 PowerShell。
 .\Find-BetterCloudflareIP.PS1 -CurrentIP <IP> [-AllIP] [-Count <Int>] [-Timeout <Int>] [-CheckDomain <String>]
 ```
 
+将会根据 IP 地址类型遍历对应的 IP 地址池列表文件。从每个 CIDR 格式的 IP 地址范围中随机选取一个 IP 地址进行测试。  
+如果发现更快且不丢包的 IP 地址，脚本将返回 `<BetterIP>`。  
+如果所有 IP 地址池遍历完毕也没有找到更快且不丢包的 IP 地址，脚本将返回 `<CurrentIP>`。
+
 ### 参数说明
 
 | 参数 | 必填 | 默认值 | 说明 |
@@ -52,6 +56,3 @@ Windows Vista 及之后的 Windows 操作系统都内置了 PowerShell。
 | `-Count` | 否 | 5 | httping 次数 |
 | `-Timeout` | 否 | 5 | 超时阈值（秒） |
 | `-CheckDomain` | 否 | cf.xiu2.xyz | 检测用域名 |
-将会根据 IP 地址类型遍历对应的 IP 地址池列表文件。从每个 CIDR 格式的 IP 地址范围中随机选取一个 IP 地址进行测试。  
-如果发现更快且不丢包的 IP 地址，脚本将返回 `<BetterIP>`。  
-如果所有 IP 地址池遍历完毕也没有找到更快且不丢包的 IP 地址，脚本将返回 `<CurrentIP>`。

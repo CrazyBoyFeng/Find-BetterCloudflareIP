@@ -21,6 +21,10 @@ Run the script:
 .\Find-BetterCloudflareIP.PS1 -CurrentIP <IP> [-AllIP] [-Count <Int>] [-Timeout <Int>] [-CheckDomain <String>]
 ```
 
+The script will traverse the corresponding IP address pool list file based on the IP address type. It will randomly select one IP address from each CIDR-formatted IP range for testing.  
+If a faster and lossless IP address is found, the script will return `<BetterIP>`.  
+If no faster and lossless IP address is found after traversing all IP address pools, the script will return `<CurrentIP>`.
+
 ### Parameters
 
 | Parameter | Required | Default | Description |
@@ -55,7 +59,3 @@ This script is called by `Find-BetterCloudflareIP.PS1` internally. You can also 
 | `-Count` | No | 5 | Number of httping requests |
 | `-Timeout` | No | 5 | Timeout in seconds |
 | `-CheckDomain` | No | cf.xiu2.xyz | Domain to check |
-
-The script will traverse the corresponding IP address pool list file based on the IP address type. It will randomly select one IP address from each CIDR-formatted IP range for testing.  
-If a faster and lossless IP address is found, the script will return `<BetterIP>`.  
-If no faster and lossless IP address is found after traversing all IP address pools, the script will return `<CurrentIP>`.
