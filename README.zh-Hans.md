@@ -44,7 +44,7 @@ Windows 10 1709 及之后的 Windows 操作系统都内置了 curl。
 .\Find-BetterCloudflareIP.PS1 -CurrentIP "1.1.1.1" -AllIP
 
 # 自定义参数
-.\Find-BetterCloudflareIP.PS1 -CurrentIP "1.1.1.1" -Count 10 -Timeout 3.0 -CheckDomain "your-domain.com"
+.\Find-BetterCloudflareIP.PS1 -CurrentIP "1.1.1.1" -Count 10 -Timeout 3 -CheckDomain "your-domain.com"
 ```
 
 ### Httping-CloudflareIP.PS1

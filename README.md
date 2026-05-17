@@ -47,7 +47,7 @@ If no faster and lossless IP address is found after traversing all IP address po
 .\Find-BetterCloudflareIP.PS1 -CurrentIP "1.1.1.1" -AllIP
 
 # Custom parameters
-.\Find-BetterCloudflareIP.PS1 -CurrentIP "1.1.1.1" -Count 10 -Timeout 3.0 -CheckDomain "your-domain.com"
+.\Find-BetterCloudflareIP.PS1 -CurrentIP "1.1.1.1" -Count 10 -Timeout 3 -CheckDomain "your-domain.com"
 ```
 
 ### Httping-CloudflareIP.PS1
